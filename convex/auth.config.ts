@@ -1,4 +1,3 @@
-//giving-rodent-62.clerk.accounts.dev
 
 export default {
     providers: [
