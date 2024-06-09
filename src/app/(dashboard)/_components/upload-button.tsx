@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useOrganization, useUser } from '@clerk/nextjs';
 import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
+import { api } from '../../../../convex/_generated/api';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/components/ui/use-toast';
@@ -26,7 +26,7 @@ import {
     DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Doc } from '../../convex/_generated/dataModel';
+import { Doc } from '../../../../convex/_generated/dataModel';
 
 const formSchema = z.object({
     title: z.string().min(1).max(100),
@@ -68,7 +68,7 @@ export function UploadButton() {
             'image/jpeg': 'image',
             'image/png': 'image',
             'application/pdf': 'pdf',
-            'text/csv': 'csv',
+            'text/csv': 'csv'
         } as Record<string, Doc<'files'>['type']>;
 
         try {
@@ -149,11 +149,8 @@ export function UploadButton() {
                                 render={() => (
                                     <FormItem>
                                         <FormLabel>File</FormLabel>
-                                        <FormControl className='cursor-pointer'>
-                                            <Input
-                                                type="file"
-                                                {...fileRef}
-                                            />
+                                        <FormControl className="cursor-pointer">
+                                            <Input type="file" {...fileRef} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
