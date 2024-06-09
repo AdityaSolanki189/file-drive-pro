@@ -26,6 +26,7 @@ import {
     DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Doc } from '../../convex/_generated/dataModel';
 
 const formSchema = z.object({
     title: z.string().min(1).max(100),
@@ -54,6 +55,7 @@ export function UploadButton() {
         if (!orgId) return;
 
         const postUrl = await generateUploadUrl();
+        const fileType = values.file[0].type;
 
         const result = await fetch(postUrl, {
             method: 'POST',
@@ -62,12 +64,19 @@ export function UploadButton() {
         });
 
         const { storageId } = await result.json();
+        const types = {
+            'image/jpeg': 'image',
+            'image/png': 'image',
+            'application/pdf': 'pdf',
+            'text/csv': 'csv',
+        } as Record<string, Doc<'files'>['type']>;
 
         try {
             await createFile({
                 name: values.title,
                 fileId: storageId,
-                orgId
+                orgId,
+                type: types[fileType]
             });
 
             form.reset();
@@ -140,9 +149,8 @@ export function UploadButton() {
                                 render={() => (
                                     <FormItem>
                                         <FormLabel>File</FormLabel>
-                                        <FormControl>
+                                        <FormControl className='cursor-pointer'>
                                             <Input
-                                                cursor-pointer
                                                 type="file"
                                                 {...fileRef}
                                             />
