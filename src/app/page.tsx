@@ -19,7 +19,6 @@ export default function Home() {
     let orgId: string | undefined = undefined;
     if (organization.isLoaded && user.isLoaded) {
         orgId = organization.organization?.id ?? user.user?.id;
-        console.log(orgId);
     }
     const createFile = useMutation(api.files.createFile);
     const files = useQuery(api.files.getFiles, orgId ? { orgId } : 'skip');

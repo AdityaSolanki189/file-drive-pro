@@ -1,5 +1,5 @@
 
-export default {
+const authConfig = {
     providers: [
         {
             domain: 'https://giving-rodent-62.clerk.accounts.dev',
@@ -7,3 +7,5 @@ export default {
         }
     ]
 };
+
+export default authConfig;
