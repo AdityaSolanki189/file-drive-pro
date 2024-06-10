@@ -7,6 +7,8 @@ export const fileTypes = v.union(
     v.literal('pdf')
 );
 
+export const userRoles = v.union(v.literal('admin'), v.literal('member'));
+
 export default defineSchema({
     // File schema
     files: defineTable({
@@ -24,6 +26,11 @@ export default defineSchema({
     // User schema
     users: defineTable({
         tokenIdentifier: v.string(),
-        orgIds: v.array(v.string())
+        orgInfo: v.array(
+            v.object({
+                orgId: v.string(),
+                role: userRoles
+            })
+        )
     }).index('by_tokenIdentifier', ['tokenIdentifier'])
 });

@@ -21,8 +21,9 @@ async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: string) {
         return null;
     }
 
+    const orgIds = user.orgInfo.map((org) => org.orgId);
     const hasAccess =
-        user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
+        orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
 
     if (!hasAccess) {
         return null;

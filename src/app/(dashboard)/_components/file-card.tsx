@@ -36,6 +36,7 @@ import {
 import { ReactNode, useState } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
+import { Protect } from '@clerk/nextjs';
 
 interface FileCardActionsProps {
     file: Doc<'files'>;
@@ -111,13 +112,15 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                             </>
                         )}
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        onClick={() => setIsConfirmOpen(true)}
-                        className="flex gap-1 text-red-600 justify-start items-center cursor-pointer"
-                    >
-                        <TrashIcon className="w-4 h-4" /> Delete
-                    </DropdownMenuItem>
+                    <Protect role="org:admin" fallback={<></>}>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            onClick={() => setIsConfirmOpen(true)}
+                            className="flex gap-1 text-red-600 justify-start items-center cursor-pointer"
+                        >
+                            <TrashIcon className="w-4 h-4" /> Delete
+                        </DropdownMenuItem>
+                    </Protect>
                 </DropdownMenuContent>
             </DropdownMenu>
         </>
