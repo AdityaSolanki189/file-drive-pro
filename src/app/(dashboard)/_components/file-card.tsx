@@ -5,7 +5,7 @@ import {
     CardHeader,
     CardTitle
 } from '@/components/ui/card';
-import { Doc, Id } from '../../../../convex/_generated/dataModel';
+import { Doc } from '../../../../convex/_generated/dataModel';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -33,13 +33,16 @@ import {
     StarIcon,
     TrashIcon
 } from 'lucide-react';
-import { ReactNode, use, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
-import Image from 'next/image';
-import { toggleFavorite } from '../../../../convex/files';
 
-function FileCardActions({ file }: { file: Doc<'files'> }) {
+interface FileCardActionsProps {
+    file: Doc<'files'>;
+    isFavorite: boolean;
+}
+
+function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
     const deleteFile = useMutation(api.files.deleteFile);
     const { toast } = useToast();
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -88,17 +91,30 @@ function FileCardActions({ file }: { file: Doc<'files'> }) {
                     <DropdownMenuItem
                         onClick={() => {
                             toggleFavorite({
-                                fileId: file._id,
+                                fileId: file._id
                             });
                         }}
-                        className="flex gap-1 items-center cursor-pointer"
+                        className="flex gap-2 cursor-pointer justify-start items-center"
                     >
-                        <StarIcon className="w-4 h-4" /> Favorite
+                        {isFavorite ? (
+                            <>
+                                <StarIcon
+                                    className="w-4 h-4 text-yellow-300"
+                                    fill="yellow"
+                                />
+                                Unfavorite
+                            </>
+                        ) : (
+                            <>
+                                <StarIcon className="w-4 h-4" />
+                                Favorite
+                            </>
+                        )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => setIsConfirmOpen(true)}
-                        className="flex gap-1 text-red-600 items-center cursor-pointer"
+                        className="flex gap-1 text-red-600 justify-start items-center cursor-pointer"
                     >
                         <TrashIcon className="w-4 h-4" /> Delete
                     </DropdownMenuItem>
@@ -108,12 +124,21 @@ function FileCardActions({ file }: { file: Doc<'files'> }) {
     );
 }
 
-export function FileCard({ file }: { file: Doc<'files'> }) {
+interface FileCardProps {
+    file: Doc<'files'>;
+    favorites: Doc<'favorites'>[];
+}
+
+export function FileCard({ file, favorites }: FileCardProps) {
     const typeIcons = {
         image: <ImageIcon />,
         pdf: <FileTextIcon />,
         csv: <GanttChartIcon />
     } as Record<Doc<'files'>['type'], ReactNode>;
+
+    const isFavorite = favorites.some(
+        (favorite) => favorite.fileId === file._id
+    );
 
     return (
         <Card>
@@ -125,7 +150,7 @@ export function FileCard({ file }: { file: Doc<'files'> }) {
                     {file.name}
                 </CardTitle>
                 <div className="absolute top-2 right-2">
-                    <FileCardActions file={file} />
+                    <FileCardActions file={file} isFavorite={isFavorite} />
                 </div>
             </CardHeader>
             <CardContent className="h-[200px] flex justify-center items-center">
