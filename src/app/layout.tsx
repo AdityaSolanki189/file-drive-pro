@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: 'File  Drive Pro',
-    description: 'Modern file storage and sharing',
+    description: 'Modern file storage and sharing'
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <ConvexClientProvider>
-                    <Toaster/>
+                    <Toaster />
                     <Header />
                     {children}
                 </ConvexClientProvider>

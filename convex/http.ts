@@ -31,7 +31,18 @@ http.route({
                 case 'organizationMembership.created':
                     await ctx.runMutation(internal.users.addOrgIdToUser, {
                         tokenIdentifier: `https://giving-rodent-62.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
-                        orgId: result.data.organization.id
+                        orgId: result.data.organization.id,
+                        role: result.data.role === 'admin' ? 'admin' : 'member'
+                    });
+                    break;
+                case 'organizationMembership.updated':
+                    await ctx.runMutation(internal.users.updateOrgIdToUser, {
+                        tokenIdentifier: `https://giving-rodent-62.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+                        orgId: result.data.organization.id,
+                        role:
+                            result.data.role === 'org:admin'
+                                ? 'admin'
+                                : 'member'
                     });
                     break;
             }
