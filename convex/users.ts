@@ -22,15 +22,45 @@ export async function getUser(
 
 export const createUser = internalMutation({
     args: {
-        tokenIdentifier: v.string()
+        tokenIdentifier: v.string(),
+        name: v.string(),
+        imageUrl: v.string()
     },
     async handler(ctx, args) {
         await ctx.db.insert('users', {
             tokenIdentifier: args.tokenIdentifier,
-            orgInfo: []
+            orgInfo: [],
+            name: args.name,
+            imageUrl: args.imageUrl
         });
     }
 });
+
+export const updateUser = internalMutation({
+    args: {
+        tokenIdentifier: v.string(),
+        name: v.string(),
+        imageUrl: v.string()
+    },
+    async handler(ctx, args) {
+        const user = await ctx.db
+        .query('users')
+        .withIndex('by_tokenIdentifier', (q) =>
+            q.eq('tokenIdentifier', args.tokenIdentifier)
+        )
+        .first();
+
+        if (!user) {
+            throw new ConvexError('User not found');
+        }
+
+        await ctx.db.patch(user._id, {
+            name: args.name,
+            imageUrl: args.imageUrl
+        });
+    }
+});
+
 
 export const addOrgIdToUser = internalMutation({
     args: {

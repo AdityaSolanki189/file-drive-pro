@@ -34,6 +34,8 @@ export default defineSchema({
                 orgId: v.string(),
                 role: userRoles
             })
-        )
+        ),
+        name: v.optional(v.string()),
+        imageUrl: v.optional(v.string())
     }).index('by_tokenIdentifier', ['tokenIdentifier'])
 });
