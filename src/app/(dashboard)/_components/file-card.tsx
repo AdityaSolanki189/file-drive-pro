@@ -31,12 +31,14 @@ import {
     ImageIcon,
     MoreVertical,
     StarIcon,
-    TrashIcon
+    TrashIcon,
+    UndoIcon
 } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { Protect } from '@clerk/nextjs';
+import { restoreFile } from '../../../../convex/files';
 
 interface FileCardActionsProps {
     file: Doc<'files'>;
@@ -45,6 +47,7 @@ interface FileCardActionsProps {
 
 function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
     const deleteFile = useMutation(api.files.deleteFile);
+    const restoreFile = useMutation(api.files.restoreFile);
     const { toast } = useToast();
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const toggleFavorite = useMutation(api.files.toggleFavorite);
@@ -58,9 +61,9 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                             Are you absolutely sure?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete your account and remove your data from our
-                            servers.
+                            This action will mark the file for deletion. It will
+                            be moved to the Trash bin. And it will be
+                            permanently deleted after 30 days.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -72,9 +75,9 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                                 });
                                 toast({
                                     variant: 'default',
-                                    title: 'File deleted',
+                                    title: 'File marked for deletion',
                                     description:
-                                        'Your file is now gone from the system'
+                                        'Your file is now moved to the Trash bin. It will be permanently deleted after 30 days.'
                                 });
                             }}
                         >
@@ -96,6 +99,7 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                             });
                         }}
                         className="flex gap-2 cursor-pointer justify-start items-center"
+                        disabled={file.shouldDelete}
                     >
                         {isFavorite ? (
                             <>
@@ -115,10 +119,25 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                     <Protect role="org:admin" fallback={<></>}>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            onClick={() => setIsConfirmOpen(true)}
-                            className="flex gap-1 text-red-600 justify-start items-center cursor-pointer"
+                            onClick={() => {
+                                if (file.shouldDelete) {
+                                    restoreFile({
+                                        fileId: file._id
+                                    });
+                                } else {
+                                    setIsConfirmOpen(true);
+                                }
+                            }}
                         >
-                            <TrashIcon className="w-4 h-4" /> Delete
+                            {file.shouldDelete ? (
+                                <div className="flex gap-2 text-green-600 items-center cursor-pointer">
+                                    <UndoIcon className="w-4 h-4" /> Restore
+                                </div>
+                            ) : (
+                                <div className="flex gap-2 text-red-600 items-center cursor-pointer">
+                                    <TrashIcon className="w-4 h-4" /> Delete
+                                </div>
+                            )}
                         </DropdownMenuItem>
                     </Protect>
                 </DropdownMenuContent>

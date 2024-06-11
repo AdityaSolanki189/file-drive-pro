@@ -92,7 +92,8 @@ export const getFiles = query({
     args: {
         orgId: v.string(),
         query: v.optional(v.string()),
-        favorites: v.optional(v.boolean())
+        favorites: v.optional(v.boolean()),
+        deletedOnly: v.optional(v.boolean())
     },
     async handler(ctx, args) {
         const identity = await ctx.auth.getUserIdentity();
@@ -132,10 +133,17 @@ export const getFiles = query({
             );
         }
 
+        if (args.deletedOnly) {
+            files = files.filter((file) => file.shouldDelete);
+        } else {
+            files = files.filter((file) => !file.shouldDelete);
+        }
+
         return files;
     }
 });
 
+// move the file to trash bin
 export const deleteFile = mutation({
     args: {
         fileId: v.id('files')
@@ -147,7 +155,34 @@ export const deleteFile = mutation({
             throw new ConvexError('User does not have access to file');
         }
 
-        await ctx.db.delete(args.fileId);
+        await ctx.db.patch(args.fileId, {
+            shouldDelete: true
+        });
+    }
+});
+
+export const restoreFile = mutation({
+    args: {
+        fileId: v.id('files')
+    },
+    async handler(ctx, args) {
+        const access = await hasAccessToFile(ctx, args.fileId);
+
+        if (!access) {
+            throw new ConvexError('User does not have access to file');
+        }
+
+        const isAdmin = access.user.orgInfo.some(
+            (org) => org.orgId === access.file.orgId && org.role === 'admin'
+        );
+
+        if (!isAdmin) {
+            throw new ConvexError('User is not an admin');
+        }
+
+        await ctx.db.patch(args.fileId, {
+            shouldDelete: false
+        });
     }
 });
 
