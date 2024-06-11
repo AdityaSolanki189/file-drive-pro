@@ -12,10 +12,12 @@ export default function Home() {
                     alt="FileDrivePro"
                     width="500"
                     height="500"
-                    className='rounded-full my-10'
+                    className="rounded-full my-10"
                 />
 
-                <h1 className="text-4xl font-bold">Welcome to FileDrivePro 🚀</h1>
+                <h1 className="text-4xl font-bold">
+                    Welcome to FileDrivePro 🚀
+                </h1>
             </div>
         </main>
     );

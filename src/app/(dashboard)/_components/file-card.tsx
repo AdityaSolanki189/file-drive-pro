@@ -6,7 +6,8 @@ import {
     CardTitle
 } from '@/components/ui/card';
 import { Doc } from '../../../../convex/_generated/dataModel';
-import { Button } from '@/components/ui/button';
+import { formatRelative } from 'date-fns';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,6 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
 import {
+    DownloadIcon,
     FileTextIcon,
     GanttChartIcon,
     ImageIcon,
@@ -35,10 +37,9 @@ import {
     UndoIcon
 } from 'lucide-react';
 import { ReactNode, useState } from 'react';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { Protect } from '@clerk/nextjs';
-import { restoreFile } from '../../../../convex/files';
 
 interface FileCardActionsProps {
     file: Doc<'files'>;
@@ -92,6 +93,14 @@ function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                     <MoreVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            window.open('', '_blank');
+                        }}
+                        className="flex gap-1 items-center cursor-pointer"
+                    >
+                        <DownloadIcon className="w-4 h-4" /> Download
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => {
                             toggleFavorite({
@@ -161,11 +170,14 @@ export function FileCard({ file, favorites }: FileCardProps) {
     const isFavorite = favorites.some(
         (favorite) => favorite.fileId === file._id
     );
+    const userProfile = useQuery(api.users.getUserProfile, {
+        userId: file.userId
+    });
 
     return (
         <Card>
             <CardHeader className="relative">
-                <CardTitle className="flex gap-2">
+                <CardTitle className="flex gap-2 text-base font-normal">
                     <div className="flex justify-center">
                         {typeIcons[file.type]}
                     </div>{' '}
@@ -183,14 +195,18 @@ export function FileCard({ file, favorites }: FileCardProps) {
                 )}
                 {file.type === 'pdf' && <FileTextIcon className="w-20 h-20" />}
             </CardContent>
-            <CardFooter className="flex justify-center">
-                <Button
-                    onClick={() => {
-                        window.open(' ', '_blank');
-                    }}
-                >
-                    Download
-                </Button>
+            <CardFooter className="flex justify-between">
+                <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
+                    <Avatar className="w-6 h-6">
+                        <AvatarImage src={userProfile?.imageUrl} />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    {userProfile?.name}
+                </div>
+                <div className="text-xs text-gray-700">
+                    Uploaded on{' '}
+                    {formatRelative(new Date(file._creationTime), new Date())}
+                </div>
             </CardFooter>
         </Card>
     );
