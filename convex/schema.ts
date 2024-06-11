@@ -17,7 +17,9 @@ export default defineSchema({
         fileId: v.id('_storage'),
         type: fileTypes,
         shouldDelete: v.optional(v.boolean())
-    }).index('by_orgId', ['orgId']),
+    })
+        .index('by_orgId', ['orgId'])
+        .index('by_shouldDelete', ['shouldDelete']),
     // Favorite schema
     favorites: defineTable({
         fileId: v.id('files'),
