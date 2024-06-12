@@ -1,4 +1,4 @@
-import { Doc } from '../../../../convex/_generated/dataModel';
+import { Doc, Id } from '../../../../convex/_generated/dataModel';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,10 +31,10 @@ import { Protect } from '@clerk/nextjs';
 
 interface FileCardActionsProps {
     file: Doc<'files'>;
-    isFavorite: boolean;
+    isFavorited: boolean;
 }
 
-export function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
+export function FileCardActions({ file, isFavorited }: FileCardActionsProps) {
     const deleteFile = useMutation(api.files.deleteFile);
     const restoreFile = useMutation(api.files.restoreFile);
     const { toast } = useToast();
@@ -85,7 +85,7 @@ export function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                         onClick={() => {
                             window.open('', '_blank');
                         }}
-                        className="flex gap-1 items-center cursor-pointer"
+                        className="flex gap-2 items-center cursor-pointer"
                     >
                         <DownloadIcon className="w-4 h-4" /> Download
                     </DropdownMenuItem>
@@ -98,7 +98,7 @@ export function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
                         className="flex gap-2 cursor-pointer justify-start items-center"
                         disabled={file.shouldDelete}
                     >
-                        {isFavorite ? (
+                        {isFavorited ? (
                             <>
                                 <StarIcon
                                     className="w-4 h-4 text-yellow-300"
@@ -141,4 +141,8 @@ export function FileCardActions({ file, isFavorite }: FileCardActionsProps) {
             </DropdownMenu>
         </>
     );
+}
+
+export function getFileUrl(fileId: Id<'_storage'>): string {
+    return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
 }

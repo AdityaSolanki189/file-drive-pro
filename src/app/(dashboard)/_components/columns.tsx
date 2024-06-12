@@ -15,7 +15,7 @@ function UserCell({ userId }: { userId: Id<'users'> }) {
     return (
         <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
             <Avatar className="w-6 h-6">
-                <AvatarImage src={userProfile?.image} />
+                <AvatarImage src={userProfile?.imageUrl} />
                 <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             {userProfile?.name}
