@@ -25,7 +25,7 @@ import {
     UndoIcon
 } from 'lucide-react';
 import { useState } from 'react';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../../../convex/_generated/api';
 import { Protect } from '@clerk/nextjs';
 
@@ -40,6 +40,7 @@ export function FileCardActions({ file, isFavorited }: FileCardActionsProps) {
     const { toast } = useToast();
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const toggleFavorite = useMutation(api.files.toggleFavorite);
+    const userInstance = useQuery(api.users.getUserInstance);
 
     return (
         <>
@@ -113,7 +114,16 @@ export function FileCardActions({ file, isFavorited }: FileCardActionsProps) {
                             </>
                         )}
                     </DropdownMenuItem>
-                    <Protect role="org:admin" fallback={<></>}>
+                    <Protect
+                        condition={(check) => {
+                            return (
+                                check({
+                                    role: 'org:admin'
+                                }) || file.userId === userInstance?._id
+                            );
+                        }}
+                        fallback={<></>}
+                    >
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={() => {
