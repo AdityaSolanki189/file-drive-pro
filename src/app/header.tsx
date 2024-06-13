@@ -3,7 +3,8 @@ import {
     OrganizationSwitcher,
     SignInButton,
     SignedOut,
-    UserButton
+    UserButton,
+    SignedIn
 } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,9 +26,11 @@ export function Header() {
                     <h3 className="text-2xl font-bold">FileDrivePro</h3>
                 </Link>
 
-                <Button variant={'outline'}>
-                    <Link href="/files">Your Files</Link>
-                </Button>
+                <SignedIn>
+                    <Button variant={'outline'}>
+                        <Link href="/files">Your Files</Link>
+                    </Button>
+                </SignedIn>
 
                 <div className="flex gap-2">
                     <OrganizationSwitcher />
