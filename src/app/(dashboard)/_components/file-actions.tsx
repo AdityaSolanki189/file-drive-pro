@@ -30,7 +30,7 @@ import { api } from '../../../../convex/_generated/api';
 import { Protect } from '@clerk/nextjs';
 
 interface FileCardActionsProps {
-    file: Doc<'files'>;
+    file: Doc<'files'> & { url: string | null };
     isFavorited: boolean;
 }
 
@@ -84,7 +84,8 @@ export function FileCardActions({ file, isFavorited }: FileCardActionsProps) {
                 <DropdownMenuContent>
                     <DropdownMenuItem
                         onClick={() => {
-                            window.open('', '_blank');
+                            if(!file.url) return;
+                            window.open(file.url, '_blank');
                         }}
                         className="flex gap-2 items-center cursor-pointer"
                     >
