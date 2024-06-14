@@ -79,6 +79,7 @@ export function FileBrowser({
     const modifiedFiles =
         files?.map((file) => ({
             ...file,
+            url: file.url ?? null,
             isFavorited: (favorites ?? []).some(
                 (favorite) => favorite.fileId === file._id
             )
