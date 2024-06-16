@@ -26,12 +26,6 @@ export function Header() {
                     <h3 className="text-2xl font-bold">FileDrivePro</h3>
                 </Link>
 
-                <SignedIn>
-                    <Button variant={'outline'}>
-                        <Link href="/files">Your Files</Link>
-                    </Button>
-                </SignedIn>
-
                 <div className="flex gap-2">
                     <OrganizationSwitcher />
                     <UserButton />
